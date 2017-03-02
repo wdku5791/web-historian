@@ -16,6 +16,13 @@ exports.serveAssets = function(res, asset, callback) {
   // css, or anything that doesn't change often.)
 };
 
-
+exports.sendLoadingPath = function(res) {
+  var loadingPagePath = archive.paths.siteAssets + '/loading.html';
+  fs.readFile(loadingPagePath, (err, data) => {
+    if (err) { console.error('show this one', err); }
+    console.log('this data________________________', data.toString());
+    res.write(data.toString());
+  });
+};
 
 // As you progress, keep thinking about what helper functions you can put here!
