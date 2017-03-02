@@ -54,18 +54,20 @@ exports.handleRequest = function (req, res) {
     });
     req.on('end', function() {
 
-      console.log('-------------------------------------');
+      // console.log('-------------------------------------');
       // console.log('body', body); 
       var requestURL = body.slice(4);
       // console.log('request url', requestURL);
       // create variable for the path to the requested site
       var pathToRequestedSiteFile = archive.paths.archivedSites + '/' + requestURL;
+      // console.log('path 1', pathToRequestedSiteFile);
       // attempt to read that file
       fs.appendFile(archive.paths.list, requestURL + '\n', (err) => {
         if (err) { console.error(err); }
         fs.readFile(pathToRequestedSiteFile, (err, data) => {
-          console.log('----------data---------------------');
-          console.log(data);
+          // console.log('----------data---------------------');
+          // console.log(data);
+          // console.log('path 2', pathToRequestedSiteFile);
           if (err) {
             // helpers.sendLoadingPath(res);
           } else {

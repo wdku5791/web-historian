@@ -81,8 +81,10 @@ describe('archive helpers', function() {
     it('should read urls from sites.txt', function (done) {
       var urlArray = ['example1.com', 'example2.com'];
       fs.writeFileSync(archive.paths.list, urlArray.join('\n'));
-
       archive.readListOfUrls(function(urls) {
+        // console.log('----------------URL-------------');
+        // console.log(urls);
+        // console.log(urlArray);
         expect(urls).to.deep.equal(urlArray);
         done();
       });
@@ -93,11 +95,12 @@ describe('archive helpers', function() {
     it('should check if a url is in the list', function (done) {
       var urlArray = ['example1.com', 'example2.com'];
       fs.writeFileSync(archive.paths.list, urlArray.join('\n'));
-
       var counter = 0;
       var total = 2;
 
       archive.isUrlInList('example1.com', function (exists) {
+        console.log('----------------URL-------------');
+        console.log('exists', exists);
         expect(exists).to.be.true;
         if (++counter === total) { done(); }
       });
