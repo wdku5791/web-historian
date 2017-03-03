@@ -82,9 +82,6 @@ describe('archive helpers', function() {
       var urlArray = ['example1.com', 'example2.com'];
       fs.writeFileSync(archive.paths.list, urlArray.join('\n'));
       archive.readListOfUrls(function(urls) {
-        // console.log('----------------URL-------------');
-        // console.log(urls);
-        // console.log(urlArray);
         expect(urls).to.deep.equal(urlArray);
         done();
       });
@@ -99,8 +96,6 @@ describe('archive helpers', function() {
       var total = 2;
 
       archive.isUrlInList('example1.com', function (exists) {
-        console.log('----------------URL-------------');
-        console.log('exists', exists);
         expect(exists).to.be.true;
         if (++counter === total) { done(); }
       });

@@ -1,6 +1,8 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
+var http = require('http');
+var url = require('url');
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -25,7 +27,8 @@ exports.initialize = function(pathsObj) {
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
-exports.readListOfUrls = function(callback) {
+
+exports.readListOfUrls = function readListOfUrls (callback) {
   fs.readFile(exports.paths.list, (err, data) => {
     if (err) {
       console.error(err);
@@ -34,13 +37,11 @@ exports.readListOfUrls = function(callback) {
     // console.log(data.toString());
     var results = data.toString().split('\n');
     // console.log('---------results---------');
-    // console.log(results);
-    
     callback(results);
   });
 };
 
-exports.isUrlInList = function(url, callback) {
+exports.isUrlInList = function isUrlInList (url, callback) {
   // var listIncludesUrl = exports.readListOfUrls(callback);
   // console.log('------------------------');
   // console.log(listIncludesUrl);
@@ -49,14 +50,72 @@ exports.isUrlInList = function(url, callback) {
 
 };
 
-exports.addUrlToList = function(url, callback) {
-  fs.appendFile(archive.paths.list, requestURL + '\n', (err) => {
-    if (err) { console.error(err); }  
+exports.addUrlToList = function addUrlToList (url, callback) {
+  fs.appendFile(exports.paths.list, url + '\n', (err) => {
+    if (err) { console.error(err); }
+    callback(url);
   });
 };
 
 exports.isUrlArchived = function(url, callback) {
+  fs.access(exports.paths.archivedSites + '/' + url, function(err) {
+    if (err) { 
+      callback(false);
+    }
+    callback(true);
+  });
 };
 
 exports.downloadUrls = function(urls) {
+  // general outline
+  // urls.forEach(function (url) {
+  //   getRequst(
+  //     url,
+  //     data,
+  //     success = function (data) {
+  //       archive(data);
+  //     }
+  //     error: go error yourself
+  // })
+  for (var j = 0; j < urls.length; j++) {
+    http.get('http://' + urls[j], (res) => {
+      var statusCode = res.statusCode;
+
+      var error;
+      if (statusCode !== 200) {
+        error = new Error(`Request Failed. \n` + `Status Code: ${statusCode}`);
+      }
+
+      if (error) {
+        console.error(error);
+        // res.resume();
+      }
+
+      var rawData = '';
+      res.on('data', (chunk) => {
+        console.log('----------chunk---------');
+        console.log(chunk);
+        rawData += chunk; 
+      });
+      res.on('end', () => {
+        console.log('-----------Raw Data----------', res);
+        console.log(rawData);
+        // res.end(rawData);
+        
+      }).on('error', (err) => {
+        console.error(err);
+      });
+
+
+    });
+    
+  }
+  
+
 };
+
+
+// archive.downloadUrls(archive.readListOfUrls())
+
+
+
