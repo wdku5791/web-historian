@@ -3,7 +3,6 @@ var path = require('path');
 var _ = require('underscore');
 var http = require('http');
 var url = require('url');
-
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
  * Consider using the `paths` object below to store frequently used file paths. This way,
@@ -78,44 +77,55 @@ exports.downloadUrls = function(urls) {
   //     error: go error yourself
   // })
   urls.forEach(function(url) {
-    http.get('http://' + url, (res) => {
-      var statusCode = res.statusCode;
+    
+    var downloadUrl = function(url) {
 
-      var error;
-      if (statusCode !== 200) {
-        error = new Error(`Request Failed. \n` + `Status Code: ${statusCode}`);
-      }
+      http.get('http://' + url, (res) => {
+        var statusCode = res.statusCode;
 
-      if (error) {
-        console.error(error);
-        // res.resume();
-      }
+        var error;
+        if (statusCode !== 200) {
+          error = new Error(`Request Failed. \n` + `Status Code: ${statusCode}`);
+        }
 
-      var rawData = '';
-      res.on('data', (chunk) => {
-        console.log('----------chunk---------');
-        console.log(chunk);
-        rawData += chunk; 
-      });
-      res.on('end', () => {
-        console.log('-----------Raw Data----------', url);
-        console.log(rawData);
-        // res.end(rawData);
+        if (error) {
+          console.error(error);
+          // res.resume();
+        }
 
-        fs.writeFile(exports.paths.archivedSites + '/' + url, rawData, (err) => {
-          if (err) { console.error(err); }
-          console.log('It\'s alive!');
+        var rawData = '';
+        res.on('data', (chunk) => {
+          // console.log('----------chunk---------');
+          // console.log(chunk);
+          rawData += chunk; 
         });
-        
-      }).on('error', (err) => {
-        console.error(err);
+        res.on('end', () => {
+          // console.log('-----------Raw Data----------', url);
+          // console.log(rawData);
+          // res.end(rawData);
+
+          fs.writeFile(exports.paths.archivedSites + '/' + url, rawData, (err) => {
+            if (err) { console.error(err); }
+            console.log('It\'s alive!');
+          });
+          
+        }).on('error', (err) => {
+          console.error(err);
+        });
       });
+    };
 
+    var checkUrlList = function (url) {
+      exports.isUrlArchived(url, function (archived) {
+        if (!archived) {
+          downloadUrl(url);
+        }
+      });
+    };
+    
+    checkUrlList(url);
 
-    });
   });
-  
-
 };
 
 

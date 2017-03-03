@@ -6,10 +6,18 @@ var qs = require('querystring');
 var fs = require('fs');
 var helpers = require('./http-helpers');
 var headers = helpers.headers;
+var htmlFetcher = require('../workers/htmlfetcher');
+var Cron = require('../node_modules/cron/lib/cron').CronJob;
+
+new Cron('*/2 * * * * *', function() { htmlFetcher.htmlFetcher(); }).start();
 
 
+archive.readListOfUrls(function (urls) { 
+  console.log(urls);
 
-
+  archive.downloadUrls(urls); 
+});
+ 
 
 exports.handleRequest = function (req, res) {
   var method = req.method;
@@ -72,8 +80,7 @@ exports.handleRequest = function (req, res) {
             // helpers.sendLoadingPath(res);
           } else {
             res.writeHead(302, headers);
-            res.write(data);
-            res.end();
+            res.end(data);
           }
         });
       });
