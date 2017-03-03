@@ -77,8 +77,8 @@ exports.downloadUrls = function(urls) {
   //     }
   //     error: go error yourself
   // })
-  for (var j = 0; j < urls.length; j++) {
-    http.get('http://' + urls[j], (res) => {
+  urls.forEach(function(url) {
+    http.get('http://' + url, (res) => {
       var statusCode = res.statusCode;
 
       var error;
@@ -98,9 +98,14 @@ exports.downloadUrls = function(urls) {
         rawData += chunk; 
       });
       res.on('end', () => {
-        console.log('-----------Raw Data----------', res);
+        console.log('-----------Raw Data----------', url);
         console.log(rawData);
         // res.end(rawData);
+
+        fs.writeFile(exports.paths.archivedSites + '/' + url, rawData, (err) => {
+          if (err) { console.error(err); }
+          console.log('It\'s alive!');
+        });
         
       }).on('error', (err) => {
         console.error(err);
@@ -108,8 +113,7 @@ exports.downloadUrls = function(urls) {
 
 
     });
-    
-  }
+  });
   
 
 };
